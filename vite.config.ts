@@ -15,12 +15,21 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
   plugins: [
     react({
       include: [
         /\.[jt]sx?$/,
-        /node_modules\/@bcmedialab\/party-games-core\/src\/.*\.js$/,
+        /party-games-core.*\.js$/,
       ],
+      babel: {
+        babelrc: false,
+        configFile: false,
+      },
     }),
     tailwindcss(),
     VitePWA({
