@@ -2,7 +2,7 @@
   # 1. Create .netrc for git auth (git reads this for HTTPS credentials)
   # 2. Install party-games-core (optional dep may have failed in npm ci, so install it properly now)
   # 3. Run the actual build
-  command = "echo \"machine github.com login x-access-token password ${GITHUB_TOKEN}\" > ~/.netrc && chmod 600 ~/.netrc && npm install git+https://github.com/rbisso-personal/party-games-core.git && npm run build"
+  command = "printf 'machine github.com login x-access-token password %s\n' \"$GITHUB_TOKEN\" > ~/.netrc && chmod 600 ~/.netrc && npm install git+https://github.com/rbisso-personal/party-games-core.git && npm run build"
   publish = "dist"
 
 [build.environment]
