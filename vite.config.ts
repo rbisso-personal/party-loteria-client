@@ -9,28 +9,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['@bcmedialab/party-games-core/client'],
-    esbuildOptions: {
-      loader: {
-        '.js': 'jsx',
-      },
-    },
-  },
-  build: {
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
   },
   plugins: [
-    react({
-      include: [
-        /\.[jt]sx?$/,
-        /party-games-core.*\.js$/,
-      ],
-      babel: {
-        babelrc: false,
-        configFile: false,
-      },
-    }),
+    react(),
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
