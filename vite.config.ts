@@ -17,7 +17,7 @@ export default defineConfig({
   },
   plugins: [
     react({
-      include: ['**/*.jsx', '**/*.tsx', '**/*.js'],
+      include: [/\.tsx?$/, /\.jsx?$/, /node_modules\/@bcmedialab\/party-games-core\/.+\.js$/],
     }),
     tailwindcss(),
     VitePWA({
