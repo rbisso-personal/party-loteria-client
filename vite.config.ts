@@ -9,6 +9,16 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['@bcmedialab/party-games-core/client'],
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
+  esbuild: {
+    loader: 'jsx',
+    include: /.*\.js$/,
+    exclude: [],
   },
   plugins: [
     react(),
