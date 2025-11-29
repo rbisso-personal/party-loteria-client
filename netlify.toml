@@ -1,9 +1,6 @@
 [build]
-  # 1. Create .netrc for git auth (git reads this for HTTPS credentials)
-  # 2. Force git to use HTTPS instead of SSH
-  # 3. Install party-games-core
-  # 4. Run the actual build
-  command = 'printf "machine github.com\nlogin x-access-token\npassword %s\n" "$GITHUB_TOKEN" > ~/.netrc && chmod 600 ~/.netrc && git config --global url."https://github.com/".insteadOf "ssh://git@github.com/" && git config --global url."https://github.com/".insteadOf "git@github.com:" && npm install git+https://github.com/rbisso-personal/party-games-core.git && npm run build'
+  # Rewrite all GitHub URLs to include the token, then install and build
+  command = 'git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" && git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "ssh://git@github.com/" && git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "git@github.com:" && npm install git+https://github.com/rbisso-personal/party-games-core.git && npm run build'
   publish = "dist"
 
 [build.environment]
