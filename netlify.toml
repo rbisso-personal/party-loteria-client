@@ -1,6 +1,5 @@
 [build]
-  # Install party-games-core manually with token auth, then build
-  command = 'git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" && git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "ssh://git@github.com/" && npm install --legacy-peer-deps git+https://github.com/rbisso-personal/party-games-core.git && npm run build'
+  command = "git config --global url.\"https://x-access-token:${GITHUB_TOKEN}@github.com/\".insteadOf \"https://github.com/\" && npm install --legacy-peer-deps git+https://github.com/rbisso-personal/party-games-core.git && npm run build"
   publish = "dist"
 
 [build.environment]
