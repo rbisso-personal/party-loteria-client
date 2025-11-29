@@ -15,11 +15,6 @@ export default defineConfig({
       },
     },
   },
-  esbuild: {
-    loader: 'jsx',
-    include: /.*\.js$/,
-    exclude: [],
-  },
   plugins: [
     react(),
     tailwindcss(),
