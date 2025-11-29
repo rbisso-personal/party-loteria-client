@@ -1,6 +1,6 @@
 [build]
-  # Rewrite all GitHub URLs to include the token, then install and build
-  command = 'git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" && git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "ssh://git@github.com/" && git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "git@github.com:" && npm install git+https://github.com/rbisso-personal/party-games-core.git && npm run build'
+  # Rewrite GitHub HTTPS URLs to include token for auth
+  command = 'git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" && npm run build'
   publish = "dist"
 
 [build.environment]
