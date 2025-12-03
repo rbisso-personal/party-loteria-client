@@ -2,6 +2,15 @@ import { create } from 'zustand'
 import type { Card, Tabla, GamePhase } from '../types'
 
 /**
+ * Winner info when game ends
+ */
+export interface Winner {
+  id: string
+  name: string
+  pattern: number[]
+}
+
+/**
  * Game-specific state for Lotería
  *
  * Note: Room/player state (roomCode, playerName, players) is managed by
@@ -18,6 +27,7 @@ interface GameState {
   // Game state
   currentCard: Card | null
   drawnCards: Card[]
+  winner: Winner | null
 
   // Settings
   winPattern: string
@@ -36,6 +46,7 @@ interface GameActions {
   markCell: (cardId: number) => void
   setCurrentCard: (card: Card | null) => void
   addDrawnCard: (card: Card) => void
+  setWinner: (winner: Winner | null) => void
 
   // Settings
   setWinPattern: (pattern: string) => void
@@ -55,6 +66,7 @@ const initialState: GameState = {
   tabla: [],
   currentCard: null,
   drawnCards: [],
+  winner: null,
   winPattern: 'line',
   drawSpeed: 8,
   language: 'es',
@@ -80,6 +92,7 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
     set((state) => ({
       drawnCards: [...state.drawnCards, card]
     })),
+  setWinner: (winner) => set({ winner }),
 
   setWinPattern: (pattern) => set({ winPattern: pattern }),
   setDrawSpeed: (speed) => set({ drawSpeed: speed }),

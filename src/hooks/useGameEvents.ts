@@ -37,6 +37,7 @@ export function useGameEvents() {
     setTabla,
     setCurrentCard,
     addDrawnCard,
+    setWinner,
     setWinPattern,
     setDrawSpeed,
     markCell,
@@ -95,6 +96,7 @@ export function useGameEvents() {
     // Game over - transition to finished phase
     const handleGameOver = (data: GameOverData) => {
       console.log('[useGameEvents] game-over:', data)
+      setWinner(data.winner || null)
       setPhase('finished')
     }
 
@@ -146,6 +148,7 @@ export function useGameEvents() {
     setTabla,
     setCurrentCard,
     addDrawnCard,
+    setWinner,
     setWinPattern,
     setDrawSpeed,
     markCell,

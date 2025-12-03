@@ -3,7 +3,19 @@ import { GameScreen } from './components/GameScreen'
 import { ConnectionOverlay } from './components/ConnectionOverlay'
 import { useGameEvents } from './hooks/useGameEvents'
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'
+// Check for server URL in query params (for local testing via QR code)
+// Falls back to environment variable, then localhost
+function getServerUrl(): string {
+  const params = new URLSearchParams(window.location.search)
+  const serverParam = params.get('server')
+  if (serverParam) {
+    console.log('[App] Using server URL from query param:', serverParam)
+    return serverParam
+  }
+  return import.meta.env.VITE_SERVER_URL || 'http://localhost:3001'
+}
+
+const SERVER_URL = getServerUrl()
 
 // Inner component that uses the game events hook
 // Must be inside PartySocketProvider to access socket

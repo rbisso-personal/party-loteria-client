@@ -3,7 +3,7 @@ import { useGameStore } from '../stores/gameStore'
 import type { Card } from '../types'
 
 export function Tabla() {
-  const { emit } = usePartySocketContext()
+  const { emit, isHost } = usePartySocketContext()
 
   const markCard = (cardId: number) => {
     emit('mark-card', { cardId })
@@ -13,17 +13,34 @@ export function Tabla() {
     emit('claim-win', {})
   }
 
+  const handleDrawCard = () => {
+    emit('draw-card', {})
+  }
+
+  const handlePause = () => {
+    emit('pause-game', {})
+  }
+
+  const handleResume = () => {
+    emit('resume-game', {})
+  }
+
   // Game state from store (events handled by useGameEvents hook in App)
   const {
+    phase,
     tabla,
     currentCard,
     drawnCards,
+    drawSpeed,
     language,
     showWinClaim,
     pendingWinClaim,
     setPendingWinClaim,
     setShowWinClaim
   } = useGameStore()
+
+  const isPaused = phase === 'paused'
+  const isManualDraw = drawSpeed === 0
 
   const handleCellTap = (cardId: number) => {
     // Check if this card has been drawn
@@ -106,7 +123,7 @@ export function Tabla() {
       </div>
 
       {/* Bottom section - always visible, fixed height */}
-      <div className="shrink-0 pt-2">
+      <div className="shrink-0 pt-2 space-y-2">
         {/* Win claim button */}
         {showWinClaim && (
           <button
@@ -125,6 +142,40 @@ export function Tabla() {
               <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
               <span>Verifying your win...</span>
             </div>
+          </div>
+        )}
+
+        {/* Host controls */}
+        {isHost && (
+          <div className="flex gap-2">
+            {/* Manual draw button */}
+            {isManualDraw && !isPaused && (
+              <button
+                onClick={handleDrawCard}
+                className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition-colors"
+              >
+                Draw Card
+              </button>
+            )}
+
+            {/* Pause/Resume button */}
+            <button
+              onClick={isPaused ? handleResume : handlePause}
+              className={`${isManualDraw ? 'px-4' : 'flex-1'} py-3 font-bold rounded-xl transition-colors ${
+                isPaused
+                  ? 'bg-green-600 hover:bg-green-500 text-white'
+                  : 'bg-slate-700 hover:bg-slate-600 text-slate-300'
+              }`}
+            >
+              {isPaused ? 'Resume' : 'Pause'}
+            </button>
+          </div>
+        )}
+
+        {/* Paused indicator for non-host */}
+        {isPaused && !isHost && (
+          <div className="py-2 text-center">
+            <span className="text-amber-500 font-medium">Game Paused</span>
           </div>
         )}
       </div>

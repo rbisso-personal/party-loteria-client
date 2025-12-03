@@ -5,6 +5,7 @@ declare module '@bcmedialab/party-games-core/client' {
   export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error'
 
   export interface Player {
+    id: string
     name: string
     [key: string]: unknown
   }
@@ -15,12 +16,16 @@ declare module '@bcmedialab/party-games-core/client' {
     roomCode: string | null
     playerName: string | null
     players: Player[]
+    hostId: string | null
+    isHost: boolean
     error: string | null
     isConnected: boolean
     isInRoom: boolean
     joinRoom: (code: string) => void
     submitName: (name: string) => void
     sendMessage: (message: string) => void
+    transferHost: (newHostId: string) => void
+    kickPlayer: (playerId: string, reason?: string) => void
     emit: (event: string, data?: unknown) => void
     on: (event: string, callback: (...args: unknown[]) => void) => () => void
     off: (event: string, callback: (...args: unknown[]) => void) => void
