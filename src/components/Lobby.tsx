@@ -44,6 +44,7 @@ export function Lobby() {
   }
 
   const handleStartGame = () => {
+    console.log('[Lobby] Starting game with:', { winPattern, drawSpeed })
     emit('start-game', { winPattern, drawSpeed })
   }
 
@@ -210,7 +211,11 @@ export function Lobby() {
                 <label className="block text-slate-400 text-sm mb-1">Draw Speed</label>
                 <select
                   value={drawSpeed}
-                  onChange={(e) => setDrawSpeed(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newSpeed = Number(e.target.value)
+                    console.log('[Lobby] Draw speed changed:', { raw: e.target.value, parsed: newSpeed })
+                    setDrawSpeed(newSpeed)
+                  }}
                   className="w-full py-2 px-3 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 >
                   {DRAW_SPEEDS.map((speed) => (

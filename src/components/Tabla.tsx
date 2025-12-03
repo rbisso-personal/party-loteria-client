@@ -42,6 +42,9 @@ export function Tabla() {
   const isPaused = phase === 'paused'
   const isManualDraw = drawSpeed === 0
 
+  // Debug logging for host controls
+  console.log('[Tabla] Host controls check:', { isHost, isManualDraw, drawSpeed, isPaused })
+
   const handleCellTap = (cardId: number) => {
     // Check if this card has been drawn
     const isDrawn = drawnCards.some((c) => c.id === cardId)
