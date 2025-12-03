@@ -97,8 +97,6 @@ export function Lobby() {
     )
   }
 
-  // Find current player in the list to get their ID
-  const currentPlayer = players.find(p => p.name === playerName)
   const otherPlayers = players.filter(p => p.name !== playerName)
 
   // Waiting for game to start view
