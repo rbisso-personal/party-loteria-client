@@ -16,12 +16,46 @@ const DRAW_SPEEDS = [
   { value: 0, label: 'Manual Draw' },
 ]
 
+const STORAGE_KEYS = {
+  winPattern: 'loteria-win-pattern',
+  drawSpeed: 'loteria-draw-speed',
+}
+
+function getStoredWinPattern(): string {
+  const stored = localStorage.getItem(STORAGE_KEYS.winPattern)
+  if (stored && WIN_PATTERNS.some(p => p.value === stored)) {
+    return stored
+  }
+  return 'line'
+}
+
+function getStoredDrawSpeed(): number {
+  const stored = localStorage.getItem(STORAGE_KEYS.drawSpeed)
+  if (stored !== null) {
+    const parsed = Number(stored)
+    if (DRAW_SPEEDS.some(s => s.value === parsed)) {
+      return parsed
+    }
+  }
+  return 8
+}
+
 export function Lobby() {
   const [nameInput, setNameInput] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [winPattern, setWinPattern] = useState('line')
-  const [drawSpeed, setDrawSpeed] = useState(8)
+  const [winPattern, setWinPatternState] = useState(getStoredWinPattern)
+  const [drawSpeed, setDrawSpeedState] = useState(getStoredDrawSpeed)
   const [showSettings, setShowSettings] = useState(false)
+
+  const setWinPattern = (value: string) => {
+    setWinPatternState(value)
+    localStorage.setItem(STORAGE_KEYS.winPattern, value)
+  }
+
+  const setDrawSpeed = (value: number) => {
+    setDrawSpeedState(value)
+    localStorage.setItem(STORAGE_KEYS.drawSpeed, String(value))
+  }
 
   const {
     roomCode,
