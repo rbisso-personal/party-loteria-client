@@ -17,16 +17,25 @@ const DRAW_SPEEDS = [
 ]
 
 const STORAGE_KEYS = {
-  winPattern: 'loteria-win-pattern',
+  winPatterns: 'loteria-win-patterns',
   drawSpeed: 'loteria-draw-speed',
 }
 
-function getStoredWinPattern(): string {
-  const stored = localStorage.getItem(STORAGE_KEYS.winPattern)
-  if (stored && WIN_PATTERNS.some(p => p.value === stored)) {
-    return stored
+function getStoredWinPatterns(): string[] {
+  const stored = localStorage.getItem(STORAGE_KEYS.winPatterns)
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Filter to only valid patterns
+        const valid = parsed.filter((p: string) => WIN_PATTERNS.some(wp => wp.value === p))
+        if (valid.length > 0) return valid
+      }
+    } catch {
+      // Invalid JSON, fall through to default
+    }
   }
-  return 'line'
+  return ['line'] // Default to line pattern
 }
 
 function getStoredDrawSpeed(): number {
@@ -43,13 +52,26 @@ function getStoredDrawSpeed(): number {
 export function Lobby() {
   const [nameInput, setNameInput] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [winPattern, setWinPatternState] = useState(getStoredWinPattern)
+  const [winPatterns, setWinPatternsState] = useState(getStoredWinPatterns)
   const [drawSpeed, setDrawSpeedState] = useState(getStoredDrawSpeed)
   const [showSettings, setShowSettings] = useState(false)
 
-  const setWinPattern = (value: string) => {
-    setWinPatternState(value)
-    localStorage.setItem(STORAGE_KEYS.winPattern, value)
+  const toggleWinPattern = (pattern: string) => {
+    setWinPatternsState(current => {
+      let updated: string[]
+      if (current.includes(pattern)) {
+        // Remove pattern, but ensure at least one remains
+        updated = current.filter(p => p !== pattern)
+        if (updated.length === 0) {
+          updated = [pattern] // Keep at least one
+        }
+      } else {
+        // Add pattern
+        updated = [...current, pattern]
+      }
+      localStorage.setItem(STORAGE_KEYS.winPatterns, JSON.stringify(updated))
+      return updated
+    })
   }
 
   const setDrawSpeed = (value: number) => {
@@ -78,8 +100,7 @@ export function Lobby() {
   }
 
   const handleStartGame = () => {
-    console.log('[Lobby] Starting game with:', { winPattern, drawSpeed })
-    emit('start-game', { winPattern, drawSpeed })
+    emit('start-game', { winPatterns, drawSpeed })
   }
 
   const handleKick = (playerId: string) => {
@@ -227,29 +248,30 @@ export function Lobby() {
           {showSettings && (
             <div className="space-y-3 p-3 bg-slate-800 rounded-lg">
               <div>
-                <label className="block text-slate-400 text-sm mb-1">Win Pattern</label>
-                <select
-                  value={winPattern}
-                  onChange={(e) => setWinPattern(e.target.value)}
-                  className="w-full py-2 px-3 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                >
+                <label className="block text-slate-400 text-sm mb-2">Win Patterns (first achieved wins)</label>
+                <div className="space-y-2">
                   {WIN_PATTERNS.map((pattern) => (
-                    <option key={pattern.value} value={pattern.value}>
-                      {pattern.label}
-                    </option>
+                    <label
+                      key={pattern.value}
+                      className="flex items-center gap-3 p-2 bg-slate-700 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={winPatterns.includes(pattern.value)}
+                        onChange={() => toggleWinPattern(pattern.value)}
+                        className="w-5 h-5 rounded border-slate-500 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-800"
+                      />
+                      <span className="text-white">{pattern.label}</span>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
 
               <div>
                 <label className="block text-slate-400 text-sm mb-1">Draw Speed</label>
                 <select
                   value={drawSpeed}
-                  onChange={(e) => {
-                    const newSpeed = Number(e.target.value)
-                    console.log('[Lobby] Draw speed changed:', { raw: e.target.value, parsed: newSpeed })
-                    setDrawSpeed(newSpeed)
-                  }}
+                  onChange={(e) => setDrawSpeed(Number(e.target.value))}
                   className="w-full py-2 px-3 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 >
                   {DRAW_SPEEDS.map((speed) => (

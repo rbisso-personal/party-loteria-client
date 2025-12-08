@@ -4,10 +4,14 @@ import { useGameStore } from '../stores/gameStore'
 import type { Card, Tabla } from '../types'
 
 interface GameStartedData {
-  winPattern: string
+  winPatterns: string[]
   drawSpeed: number
   totalCards: number
   playerCount: number
+}
+
+interface WinAvailableData {
+  winningPositions: number[]
 }
 
 interface CardDrawnData {
@@ -38,11 +42,12 @@ export function useGameEvents() {
     setCurrentCard,
     addDrawnCard,
     setWinner,
-    setWinPattern,
+    setWinPatterns,
     setDrawSpeed,
     markCell,
     setShowWinClaim,
     setPendingWinClaim,
+    setWinningPositions,
     reset
   } = useGameStore()
 
@@ -54,8 +59,9 @@ export function useGameEvents() {
     // Game started - transition to playing phase
     const handleGameStarted = (data: GameStartedData) => {
       console.log('[useGameEvents] game-started received:', data)
-      setWinPattern(data.winPattern)
+      setWinPatterns(data.winPatterns)
       setDrawSpeed(data.drawSpeed)
+      setWinningPositions([]) // Reset winning positions for new game
       setPhase('playing')
     }
 
@@ -78,9 +84,10 @@ export function useGameEvents() {
       markCell(data.cardId)
     }
 
-    // Win available - show claim button
-    const handleWinAvailable = () => {
-      console.log('[useGameEvents] win-available')
+    // Win available - show claim button and highlight winning positions
+    const handleWinAvailable = (data: WinAvailableData) => {
+      console.log('[useGameEvents] win-available, positions:', data.winningPositions)
+      setWinningPositions(data.winningPositions)
       setShowWinClaim(true)
     }
 
@@ -149,11 +156,12 @@ export function useGameEvents() {
     setCurrentCard,
     addDrawnCard,
     setWinner,
-    setWinPattern,
+    setWinPatterns,
     setDrawSpeed,
     markCell,
     setShowWinClaim,
     setPendingWinClaim,
+    setWinningPositions,
     reset
   ])
 }

@@ -35,15 +35,13 @@ export function Tabla() {
     language,
     showWinClaim,
     pendingWinClaim,
+    winningPositions,
     setPendingWinClaim,
     setShowWinClaim
   } = useGameStore()
 
   const isPaused = phase === 'paused'
   const isManualDraw = drawSpeed === 0
-
-  // Debug logging for host controls
-  console.log('[Tabla] Host controls check:', { isHost, isManualDraw, drawSpeed, isPaused })
 
   const handleCellTap = (cardId: number) => {
     // Check if this card has been drawn
@@ -83,6 +81,7 @@ export function Tabla() {
           {tabla.map((cell) => {
             const isDrawn = drawnCards.some((c) => c.id === cell.card.id)
             const canMark = isDrawn && !cell.marked
+            const isWinningPosition = winningPositions.includes(cell.position)
 
             return (
               <button
@@ -92,7 +91,9 @@ export function Tabla() {
                 className={`
                   relative rounded-lg overflow-hidden transition-all
                   ${cell.marked
-                    ? 'ring-4 ring-amber-500 ring-inset'
+                    ? isWinningPosition
+                      ? 'ring-4 ring-green-500 ring-inset'
+                      : 'ring-4 ring-amber-500 ring-inset'
                     : isDrawn
                       ? 'ring-2 ring-green-500 animate-pulse'
                       : ''
@@ -109,10 +110,14 @@ export function Tabla() {
                   loading="lazy"
                 />
 
-                {/* Marked overlay */}
+                {/* Marked overlay - green for winning positions, amber for regular */}
                 {cell.marked && (
-                  <div className="absolute inset-0 bg-amber-500/30 flex items-center justify-center">
-                    <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center">
+                  <div className={`absolute inset-0 flex items-center justify-center ${
+                    isWinningPosition ? 'bg-green-500/30' : 'bg-amber-500/30'
+                  }`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      isWinningPosition ? 'bg-green-500' : 'bg-amber-500'
+                    }`}>
                       <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>

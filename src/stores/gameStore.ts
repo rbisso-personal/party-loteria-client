@@ -30,13 +30,14 @@ interface GameState {
   winner: Winner | null
 
   // Settings
-  winPattern: string
+  winPatterns: string[]
   drawSpeed: number
   language: 'es' | 'en'
 
   // UI state
   showWinClaim: boolean
   pendingWinClaim: boolean
+  winningPositions: number[] // Positions that form the winning pattern
 }
 
 interface GameActions {
@@ -49,13 +50,14 @@ interface GameActions {
   setWinner: (winner: Winner | null) => void
 
   // Settings
-  setWinPattern: (pattern: string) => void
+  setWinPatterns: (patterns: string[]) => void
   setDrawSpeed: (speed: number) => void
   setLanguage: (lang: 'es' | 'en') => void
 
   // UI
   setShowWinClaim: (show: boolean) => void
   setPendingWinClaim: (pending: boolean) => void
+  setWinningPositions: (positions: number[]) => void
 
   // Reset
   reset: () => void
@@ -67,11 +69,12 @@ const initialState: GameState = {
   currentCard: null,
   drawnCards: [],
   winner: null,
-  winPattern: 'line',
+  winPatterns: ['line'],
   drawSpeed: 8,
   language: 'es',
   showWinClaim: false,
-  pendingWinClaim: false
+  pendingWinClaim: false,
+  winningPositions: []
 }
 
 export const useGameStore = create<GameState & GameActions>((set) => ({
@@ -94,12 +97,13 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
     })),
   setWinner: (winner) => set({ winner }),
 
-  setWinPattern: (pattern) => set({ winPattern: pattern }),
+  setWinPatterns: (patterns) => set({ winPatterns: patterns }),
   setDrawSpeed: (speed) => set({ drawSpeed: speed }),
   setLanguage: (lang) => set({ language: lang }),
 
   setShowWinClaim: (show) => set({ showWinClaim: show }),
   setPendingWinClaim: (pending) => set({ pendingWinClaim: pending }),
+  setWinningPositions: (positions) => set({ winningPositions: positions }),
 
   reset: () => set(initialState)
 }))
