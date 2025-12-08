@@ -3,9 +3,17 @@ import { GameScreen } from './components/GameScreen'
 import { ConnectionOverlay } from './components/ConnectionOverlay'
 import { useGameEvents } from './hooks/useGameEvents'
 
+// Check if hostname is a LAN IP address (for local dev testing from phones)
+function isLanIp(hostname: string): boolean {
+  // 192.168.x.x, 10.x.x.x, 172.16-31.x.x
+  return /^192\.168\.\d+\.\d+$/.test(hostname) ||
+         /^10\.\d+\.\d+\.\d+$/.test(hostname) ||
+         /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/.test(hostname)
+}
+
 // Determine server URL based on context:
 // 1. Explicit server param in URL (for testing)
-// 2. Derive from current hostname (for LAN dev access from phone)
+// 2. Derive from LAN IP hostname (for local dev access from phone)
 // 3. Production env variable
 // 4. Fallback to localhost
 function getServerUrl(): string {
@@ -16,13 +24,13 @@ function getServerUrl(): string {
     return serverParam
   }
 
-  // Dev mode: derive server URL from current host
+  // Dev mode: derive server URL from LAN IP
   // When phone accesses 192.168.x.x:5173, use 192.168.x.x:3001 for server
-  // This MUST come before the env var check so LAN access works
+  // Only applies to LAN IPs, not production hostnames like *.netlify.app
   const hostname = window.location.hostname
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+  if (isLanIp(hostname)) {
     const serverUrl = `http://${hostname}:3001`
-    console.log('[App] Using derived server URL from hostname:', serverUrl)
+    console.log('[App] Using derived server URL from LAN IP:', serverUrl)
     return serverUrl
   }
 
