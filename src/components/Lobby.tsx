@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePartySocketContext } from '@bcmedialab/party-games-core/client'
 
 const WIN_PATTERNS = [
@@ -90,6 +90,24 @@ export function Lobby() {
     transferHost,
     emit,
   } = usePartySocketContext()
+
+  // Track if we've sent initial settings
+  const hasSentInitialSettings = useRef(false)
+
+  // Emit settings to server whenever they change (host only)
+  // This keeps STB in sync with host's settings
+  useEffect(() => {
+    if (!isHost || !emit) return
+
+    // Emit current settings to server
+    emit('update-settings', { winPatterns, drawSpeed })
+
+    // Mark that we've sent initial settings
+    if (!hasSentInitialSettings.current) {
+      hasSentInitialSettings.current = true
+      console.log('[Lobby] Sent initial settings to server:', { winPatterns, drawSpeed })
+    }
+  }, [isHost, emit, winPatterns, drawSpeed])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
