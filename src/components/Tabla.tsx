@@ -2,6 +2,15 @@ import { usePartySocketContext } from '@bcmedialab/party-games-core/client'
 import { useGameStore } from '../stores/gameStore'
 import type { Card } from '../types'
 
+// Short pattern names for game display (matches STB format)
+const PATTERN_NAMES: Record<string, string> = {
+  line: 'Line',
+  corners: '4 Corners',
+  center: 'Center',
+  x: 'X Pattern',
+  full: 'Full Board',
+}
+
 export function Tabla() {
   const { emit, isHost } = usePartySocketContext()
 
@@ -32,6 +41,7 @@ export function Tabla() {
     currentCard,
     drawnCards,
     drawSpeed,
+    winPatterns,
     language,
     showWinClaim,
     pendingWinClaim,
@@ -132,8 +142,8 @@ export function Tabla() {
 
       {/* Bottom section - always visible, fixed height */}
       <div className="shrink-0 pt-2 space-y-2">
-        {/* Win claim button */}
-        {showWinClaim && (
+        {/* Win claim button OR win patterns display */}
+        {showWinClaim ? (
           <button
             onClick={handleClaimWin}
             disabled={pendingWinClaim}
@@ -141,6 +151,17 @@ export function Tabla() {
           >
             {pendingWinClaim ? 'Checking...' : '¡LOTERÍA!'}
           </button>
+        ) : !pendingWinClaim && (
+          <div className="py-3 px-4 bg-slate-800 rounded-xl">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400 text-sm uppercase tracking-wide shrink-0">
+                {winPatterns.length > 1 ? 'Win Patterns:' : 'Win Pattern:'}
+              </span>
+              <span className="text-amber-500 font-bold">
+                {winPatterns.map(p => PATTERN_NAMES[p] || p).join(', ')}
+              </span>
+            </div>
+          </div>
         )}
 
         {/* Pending claim indicator */}
